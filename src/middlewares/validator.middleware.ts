@@ -1,8 +1,7 @@
 import {Request, Response, NextFunction} from "express";
-
 import {body, validationResult} from 'express-validator';
-import {blogsService} from "../services/blogs.service";
 import {APIErrorResultModel} from "../controllers/dto/apiErrorResult.dto";
+import {queryRepository} from "../repositories/queryRepository";
 
 export const validatorMiddleware = {
     validateBlogInputModel: () => [
@@ -49,7 +48,8 @@ export const validatorMiddleware = {
             .trim()
             .custom(
                 async (blogId) => {
-                    const blog = await blogsService.getBlogById(blogId);
+                    console.log(blogId);
+                    const blog = await queryRepository.getBlogById(blogId);
                     if (!blog) throw new Error();
                 }
             )
