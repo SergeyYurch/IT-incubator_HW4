@@ -6,14 +6,28 @@ import {
     RequestWithId, RequestWithIdAndBody,
 } from "../types/request.type";
 import {BlogInputModelDto} from "./dto/blogInputModel.dto";
+import {queryRepository} from "../repositories/queryRepository";
+import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
 
 export const blogsRouter = Router();
 
 const {validateBlogInputModel, validateResult} = validatorMiddleware;
-const {getAllBlogs, createNewBlog, editBlogById, getBlogById, deleteBlogById} = blogsService;
+const {createNewBlog, editBlogById, deleteBlogById} = blogsService;
+const {getAllBlogs, getBlogById, getPostsForBlog} = queryRepository;
+
+const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {
+    return {
+        pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
+        pageSize: req.query.pageSize ? +req.query.pageSize : 10,
+        sortBy: req.query.sortBy ? String(req.query.sortBy) : 'createdAt',
+        sortDirection: req.query.sortDirection === 'desc' ? 'desc' : 'asc'
+    };
+};
 
 blogsRouter.get('/', async (req: Request, res: Response) => {
-    return res.status(200).json(await getAllBlogs());
+    const searchNameTerm = req.query.searchNameTerm ? String(req.query.searchNameTerm) : null;
+    const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
+    return res.status(200).json(await getAllBlogs(searchNameTerm, paginatorOption));
 });
 
 blogsRouter.post('/',
@@ -31,6 +45,16 @@ blogsRouter.get('/:id', async (req: RequestWithId, res: Response) => {
     return result ? res.status(200).json(result) : res.sendStatus(404);
 });
 
+
+blogsRouter.get('/:id/posts', async (req: RequestWithId, res: Response) => {
+    const id = req.params.id;
+    const blogIsExist = await getBlogById(id);
+    if (!blogIsExist) return res.sendStatus(404);
+    const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
+    const result = await getPostsForBlog(id, paginatorOption);
+    return res.status(200).json(result);
+});
+
 blogsRouter.put('/:id',
     validateBlogInputModel(),
     validateResult,
@@ -40,12 +64,12 @@ blogsRouter.put('/:id',
         if (!blog) return res.sendStatus(404);
         const {name, websiteUrl, description} = req.body;
         const inputBlog: BlogInputModelDto = {name, websiteUrl, description};
-        const result =await editBlogById(id, inputBlog);
+        const result = await editBlogById(id, inputBlog);
         return !result ? res.sendStatus(500) : res.sendStatus(204);
     });
 
 blogsRouter.delete('/:id', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
-    const result =await deleteBlogById(id);
-    return  result? res.sendStatus(204) : res.sendStatus(404);
+    const result = await deleteBlogById(id);
+    return result ? res.sendStatus(204) : res.sendStatus(404);
 });
