@@ -13,7 +13,7 @@ import {parseQueryPaginator} from "../helpers/helpers";
 export const postsRouter = Router();
 const {validatePostInputModel, validateResult} = validatorMiddleware;
 const {deletePostById, editPostById, createNewPost} = postsService;
-const {getPostById, getAllPosts, getBlogById} = queryRepository;
+const {getPostById, getAllPosts} = queryRepository;
 
 postsRouter.get('/', async (req: Request, res: Response) => {
     const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
