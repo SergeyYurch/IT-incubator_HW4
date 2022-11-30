@@ -1,30 +1,20 @@
-import {repository} from "../repositories/repositoryMongo";
+import {repository} from "../repositories/repository";
 import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
 import {BlogsServiceInterface} from "./blogs.service.interface";
 import {BlogInputModelDto} from "../controllers/dto/blogInputModel.dto";
 import {BlogEntity} from "./entities/blog.entity";
 import {BlogEditEntity} from "./entities/blog-edit.entity";
+import {queryRepository} from "../repositories/queryRepository";
 
 const {
-    getAllBlogs,
     createNewBlog,
     updateBlogById,
-    getBlogById,
     deleteBlogById
 } = repository;
 
+const { getBlogById} = queryRepository
 export const blogsService:BlogsServiceInterface = {
 
-    getAllBlogs: async (): Promise<BlogViewModelDto[]> => {
-        const blogsFromDb = await getAllBlogs();
-        return blogsFromDb.map(p => ({
-            id: p._id.toString(),
-            name: p.name,
-            websiteUrl: p.websiteUrl,
-            description: p.description,
-            createdAt: p.createdAt
-        }));
-    },
 
     createNewBlog: async (blog: BlogInputModelDto): Promise<BlogViewModelDto | null> => {
         const {name, websiteUrl, description} = blog;
@@ -43,23 +33,8 @@ export const blogsService:BlogsServiceInterface = {
         };
     },
 
-    getBlogById: async (id: string): Promise<BlogViewModelDto | null> => {
-        const blogFromDb = await getBlogById(id);
-        if (!blogFromDb) return null;
-        const {name, websiteUrl,description, createdAt, _id} = blogFromDb;
-        return {
-            id: _id.toString(),
-            name,
-            description,
-            websiteUrl,
-            createdAt
-        };
-    },
-
     editBlogById: async (id: string, blog: BlogInputModelDto): Promise<boolean> => {
         const {name, websiteUrl, description} = blog;
-       // const oldBlog = await getBlogById(id);
-       // if (!oldBlog) return false;
         const blogToDb: BlogEditEntity = {
             name,
             websiteUrl,
