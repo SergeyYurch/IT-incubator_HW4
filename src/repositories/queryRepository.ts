@@ -4,24 +4,20 @@ import {PaginatorOptionInterface, QueryRepositoryInterface} from "./queryReposit
 import {BlogsViewModelPaginatorDto, BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
 import {PostsViewModelPaginatorDto, PostViewModelDto} from "../controllers/dto/postViewModel.dto";
 
-let filter = {};
 const pagesCount = (totalCount: number, pageSize: number) => Math.ceil(totalCount / pageSize);
-const defPaginatorOption: PaginatorOptionInterface = {
-    pageNumber: 0,
-    pageSize: 1,
-    sortBy: 'createdAt',
-    sortDirection: 'asc'
-};
 
 export const queryRepository: QueryRepositoryInterface = {
 
     getAllBlogs: async (
         searchNameTerm: string | null = null,
-        paginatorOption:PaginatorOptionInterface = defPaginatorOption
+        paginatorOption: PaginatorOptionInterface
     ): Promise<BlogsViewModelPaginatorDto> => {
+        console.log(`[queryRepository]: ${(new Date()).toISOString()} - start getAllBlogs`);
         const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
-        if (searchNameTerm) filter = {'name': {$regex: searchNameTerm}};
+        const filter = searchNameTerm ? {'name': {$regex: searchNameTerm}} : {};
         const totalCount = await blogsCollection.count(filter);
+        console.log(pageNumber);
+
         const result = await blogsCollection.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
             .skip((pageNumber - 1) * pageSize)
@@ -46,12 +42,12 @@ export const queryRepository: QueryRepositoryInterface = {
 
     getPostsForBlog: async (
         blogId: string,
-        paginatorOption:PaginatorOptionInterface = defPaginatorOption
-    ): Promise<PostsViewModelPaginatorDto | null> => {
-        filter = {id: new ObjectId(blogId)};
+        paginatorOption: PaginatorOptionInterface
+    ): Promise<PostsViewModelPaginatorDto> => {
+        console.log(`[queryRepository]: ${(new Date()).toISOString()} - start getPostsForBlog ${blogId}.`)
+
+        const filter = {blogId: blogId};
         const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
-        const blogIsExist = await blogsCollection.findOne(filter);
-        if (!blogIsExist) return null;
         const totalCount = await postsCollection.count(filter);
         const result = await postsCollection.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
@@ -78,6 +74,7 @@ export const queryRepository: QueryRepositoryInterface = {
     },
 
     getBlogById: async (id: string): Promise<BlogViewModelDto | null> => {
+        console.log(`[queryRepository]: ${(new Date()).toISOString()} - start getBlogById`);
         const result = await blogsCollection.findOne({_id: new ObjectId(id)});
         if (!result) return null;
         const {name, websiteUrl, description, createdAt, _id} = result;
@@ -90,10 +87,10 @@ export const queryRepository: QueryRepositoryInterface = {
         };
     },
 
-
     getAllPosts: async (
-        paginatorOption:PaginatorOptionInterface = defPaginatorOption
+        paginatorOption: PaginatorOptionInterface
     ): Promise<PostsViewModelPaginatorDto> => {
+        console.log(`[queryRepository]: ${(new Date()).toISOString()} - start getAllPosts`);
         const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
         const totalCount = await postsCollection.count({});
         const result = await postsCollection.find({})
@@ -122,6 +119,7 @@ export const queryRepository: QueryRepositoryInterface = {
 
 
     getPostById: async (id: string): Promise<PostViewModelDto | null> => {
+        console.log(`[queryRepository]: ${(new Date()).toISOString()} - start getPostById`);
         const result = await postsCollection.findOne({_id: new ObjectId(id)});
         if (!result) return null;
         const {title, shortDescription, content, blogId, blogName, createdAt, _id} = result;
