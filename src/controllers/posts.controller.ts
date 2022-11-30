@@ -6,17 +6,22 @@ import {
     RequestWithBody, RequestWithId,
     RequestWithIdAndBody
 } from "../types/request.type";
+import {queryRepository} from "../repositories/queryRepository";
+import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
+import {parseQueryPaginator} from "../helpers/helpers";
 
 export const postsRouter = Router();
 const {validatePostInputModel, validateResult} = validatorMiddleware;
-const {deletePostById, getAllPosts, editPostById, getPostById, createNewPost} = postsService;
+const {deletePostById, editPostById, createNewPost} = postsService;
+const {getPostById, getAllPosts, getBlogById} = queryRepository;
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-    const posts =  await getAllPosts();
+    const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
+    const posts = await getAllPosts(paginatorOption);
     return res.status(200).json(posts);
 });
 
-postsRouter.post('/', validatePostInputModel(),validateResult,async (req: RequestWithBody<PostInputModelDto>, res: Response) => {
+postsRouter.post('/', validatePostInputModel(), validateResult, async (req: RequestWithBody<PostInputModelDto>, res: Response) => {
     const {title, shortDescription, content, blogId} = req.body;
     const createdPost = await createNewPost({title, shortDescription, content, blogId});
     return createdPost ? res.status(201).json(createdPost) : res.sendStatus(500);
@@ -28,7 +33,7 @@ postsRouter.get('/:id', async (req: RequestWithId, res: Response) => {
     return result ? res.status(200).json(result) : res.sendStatus(404);
 });
 
-postsRouter.put('/:id', validatePostInputModel(), validateResult,async (req: RequestWithIdAndBody<PostInputModelDto>, res: Response) => {
+postsRouter.put('/:id', validatePostInputModel(), validateResult, async (req: RequestWithIdAndBody<PostInputModelDto>, res: Response) => {
     const id = req.params.id;
     if (!(await getPostById(id))) return res.sendStatus(404);
     const body = req.body;
@@ -38,14 +43,14 @@ postsRouter.put('/:id', validatePostInputModel(), validateResult,async (req: Req
         content: body.content,
         shortDescription: body.shortDescription
     };
-    const result =await editPostById(id, post)
-    return  result? res.sendStatus(204) : res.sendStatus(404);
+    const result = await editPostById(id, post);
+    return result ? res.sendStatus(204) : res.sendStatus(404);
 });
 
-postsRouter.delete('/:id',async (req: RequestWithId, res: Response) => {
+postsRouter.delete('/:id', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
     if (!(await getPostById(id))) return res.sendStatus(404);
-    const result = await deletePostById(id)
+    const result = await deletePostById(id);
     return result ? res.sendStatus(204) : res.sendStatus(500);
 });
 
