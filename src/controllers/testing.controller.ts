@@ -1,5 +1,5 @@
 import {Router, Request, Response, NextFunction} from "express";
-import {repository} from "../repositories/repositoryMongo";
+import {repository} from "../repositories/repository";
 export const testingRouter = Router();
 
 testingRouter.use((req: Request, res: Response, next: NextFunction) => {
