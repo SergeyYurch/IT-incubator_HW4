@@ -8,6 +8,7 @@ import {
 import {BlogInputModelDto} from "./dto/blogInputModel.dto";
 import {queryRepository} from "../repositories/queryRepository";
 import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
+import {parseQueryPaginator} from "../helpers/helpers";
 
 export const blogsRouter = Router();
 
@@ -15,14 +16,7 @@ const {validateBlogInputModel, validateResult} = validatorMiddleware;
 const {createNewBlog, editBlogById, deleteBlogById} = blogsService;
 const {getAllBlogs, getBlogById, getPostsForBlog} = queryRepository;
 
-const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {
-    return {
-        pageNumber: req.query.pageNumber ? +req.query.pageNumber : 1,
-        pageSize: req.query.pageSize ? +req.query.pageSize : 10,
-        sortBy: req.query.sortBy ? String(req.query.sortBy) : 'createdAt',
-        sortDirection: req.query.sortDirection === 'desc' ? 'desc' : 'asc'
-    };
-};
+
 
 blogsRouter.get('/', async (req: Request, res: Response) => {
     const searchNameTerm = req.query.searchNameTerm ? String(req.query.searchNameTerm) : null;
