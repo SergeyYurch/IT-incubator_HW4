@@ -14,14 +14,10 @@ export interface BlogDbInterface extends BlogEntity {
 
 export interface RepositoryInterface {
     dataBaseClear: () => Promise<boolean>;
-    getAllBlogs: () => Promise<BlogDbInterface[]>;
     createNewBlog: (inputBlog: BlogEntity) => Promise<BlogDbInterface | null>;
-    getBlogById: (id: string) => Promise<BlogDbInterface | null>;
     updateBlogById: (id: string, inputBlog: BlogEditEntity) => Promise<boolean>;
     deleteBlogById: (id: string) => Promise<boolean>;
-    getAllPosts: () => Promise<PostDbInterface[]>;
     createNewPost: (inputPost: PostEntity) => Promise<PostDbInterface|null>;
-    getPostById: (id: string) => Promise<PostDbInterface | null>;
     updatePostById: (id: string, inputPost: PostEditEntity) => Promise<boolean>;
     deletePostById: (id: string) => Promise<boolean>;
 }
