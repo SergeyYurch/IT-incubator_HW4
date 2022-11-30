@@ -1,34 +1,21 @@
 import {PostViewModelDto} from "../controllers/dto/postViewModel.dto";
 import {PostInputModelDto} from "../controllers/dto/postInputModel.dto";
-import {repository} from "../repositories/repositoryMongo";
+import {repository} from "../repositories/repository";
 import {PostEntity} from "./entities/post.entity";
 import {PostsServiceInterface} from "./posts.service.interface";
 import {PostEditEntity} from "./entities/postEdit.entity";
+import {queryRepository} from "../repositories/queryRepository";
 
 const {
-    getAllPosts,
     createNewPost,
-    getPostById,
     updatePostById,
     deletePostById,
-    getBlogById
 } = repository;
 
+const {getBlogById} = queryRepository
 
 export const postsService:PostsServiceInterface = {
-    getAllPosts: async (): Promise<PostViewModelDto[]> => {
-        const postsFromDb = await getAllPosts();
-        return postsFromDb.map(p => ({
-            id: p._id.toString(),
-            title: p.title,
-            shortDescription: p.shortDescription,
-            content: p.content,
-            blogId: p.blogId,
-            blogName: p.blogName,
-            createdAt: p.createdAt
-        }));
 
-    },
     createNewPost: async (post: PostInputModelDto): Promise<PostViewModelDto | null> => {
         const {title, shortDescription, content, blogId} = post;
         const blogName = (await getBlogById(blogId))?.name
@@ -47,21 +34,6 @@ export const postsService:PostsServiceInterface = {
             blogId: postInDb.blogId,
             blogName: postInDb.blogName,
             createdAt:postInDb.createdAt
-        };
-    },
-    getPostById: async (id: string): Promise<PostViewModelDto | null> => {
-        const postFromDb = await getPostById(id);
-        if (!postFromDb) return null;
-        const {title, shortDescription, content, blogId, blogName, createdAt,_id} = postFromDb;
-        if (!blogName) return null;
-        return {
-            id:_id.toString(),
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName,
-            createdAt
         };
     },
 
