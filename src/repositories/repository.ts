@@ -12,54 +12,44 @@ import {PostEditEntity} from "../services/entities/postEdit.entity";
 
 export const repository:RepositoryInterface = {
     dataBaseClear: async (): Promise<boolean> => {
+        console.log(`[repository]:start dataBaseClear`);
         const resultBlogs = await blogsCollection.deleteMany({});
         const resultPosts = await postsCollection.deleteMany({});
         return resultBlogs.acknowledged && resultPosts.acknowledged;
     },
 
-    // getAllBlogs: async (): Promise<BlogDbInterface[]> => {
-    //     return blogsCollection.find({}).toArray();
-    // },
-
     createNewBlog: async (inputBlog: BlogEntity): Promise<BlogDbInterface | null> => {
+        console.log(`[repository]:start createNewBlog`);
         const result = await blogsCollection.insertOne(inputBlog);
         return await blogsCollection.findOne({_id: result.insertedId});
     },
 
-    // getBlogById: async (id: string): Promise<BlogDbInterface | null> => {
-    //     return await blogsCollection.findOne({_id: new ObjectId(id)});
-    // },
-
     updateBlogById: async (id: string, inputBlog: BlogEditEntity): Promise<boolean> => {
+        console.log(`[repository]:start updateBlogById`);
         const result = await blogsCollection.updateOne({_id: new ObjectId(id)}, {$set: inputBlog});
         return result.acknowledged;
     },
 
     deleteBlogById: async (id: string): Promise<boolean> => {
+        console.log(`[repository]:start deleteBlogById`);
         const result = await blogsCollection.deleteOne({_id: new ObjectId(id)});
         return result.acknowledged;
     },
 
-    // getAllPosts: async (): Promise<PostDbInterface[]> => {
-    //     console.log(`[repository]: ${(new Date()).toISOString()} - start getAllPosts.`)
-    //     return await postsCollection.find({}).toArray();
-    // },
-
     createNewPost: async (inputPost: PostEntity): Promise<PostDbInterface | null> => {
+        console.log(`[repository]:start createNewPost`);
         const result = await postsCollection.insertOne(inputPost);
         return await postsCollection.findOne({_id: result.insertedId});
     },
 
-    // getPostById: async (id: string): Promise<PostDbInterface | null> => {
-    //     return await postsCollection.findOne({_id: new ObjectId(id)});
-    // },
-
     updatePostById: async (id: string, inputPost: PostEditEntity):Promise<boolean> => {
+        console.log(`[repository]:start updatePostById`);
         const result = await postsCollection.updateOne({_id: new ObjectId(id)}, {$set: inputPost});
         return result.acknowledged;
     },
 
     deletePostById: async (id: string): Promise<boolean> => {
+        console.log(`[repository]:start deletePostById`);
         const result = await postsCollection.deleteOne({_id: new ObjectId(id)});
         return result.acknowledged;
     }
