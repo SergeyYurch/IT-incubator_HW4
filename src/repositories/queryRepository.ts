@@ -14,7 +14,7 @@ export const queryRepository: QueryRepositoryInterface = {
     ): Promise<BlogsViewModelPaginatorDto> => {
         console.log(`[queryRepository]: ${(new Date()).toISOString()} - start getAllBlogs`);
         const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
-        const filter = searchNameTerm ? {'name': {$regex: searchNameTerm}} : {};
+        const filter = searchNameTerm ? {'name': {$regex: searchNameTerm, $options: 'i'}} : {};
         const totalCount = await blogsCollection.count(filter);
         const result = await blogsCollection.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
