@@ -16,8 +16,6 @@ export const queryRepository: QueryRepositoryInterface = {
         const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
         const filter = searchNameTerm ? {'name': {$regex: searchNameTerm}} : {};
         const totalCount = await blogsCollection.count(filter);
-        console.log(pageNumber);
-
         const result = await blogsCollection.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
             .skip((pageNumber - 1) * pageSize)
