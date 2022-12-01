@@ -9,16 +9,24 @@ import {BlogInputModelDto} from "./dto/blogInputModel.dto";
 import {queryRepository} from "../repositories/queryRepository";
 import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
 import {parseQueryPaginator} from "../helpers/helpers";
+import {postsService} from "../services/postsService";
+import {ObjectId} from "mongodb";
 
 export const blogsRouter = Router();
 
-const {validateBlogInputModel, validateResult} = validatorMiddleware;
+const {
+    validateBlogInputModel,
+    validatePostInputModel,
+    validateResult
+} = validatorMiddleware;
 const {createNewBlog, editBlogById, deleteBlogById} = blogsService;
+const {createNewPost} = postsService;
 const {getAllBlogs, getBlogById, getPostsForBlog} = queryRepository;
 
 
-
 blogsRouter.get('/', async (req: Request, res: Response) => {
+    console.log(`[blogsController]: ${(new Date()).toISOString()} - start GET:/blogs`);
+
     const searchNameTerm = req.query.searchNameTerm ? String(req.query.searchNameTerm) : null;
     const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
     return res.status(200).json(await getAllBlogs(searchNameTerm, paginatorOption));
@@ -35,6 +43,8 @@ blogsRouter.post('/',
 
 blogsRouter.get('/:id', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
+    console.log(`[blogsController]: ${(new Date()).toISOString()} - start GET:/${id}`);
+    if (!ObjectId.isValid(id)) return res.sendStatus(404);
     const result = await getBlogById(id);
     return result ? res.status(200).json(result) : res.sendStatus(404);
 });
@@ -42,6 +52,8 @@ blogsRouter.get('/:id', async (req: RequestWithId, res: Response) => {
 
 blogsRouter.get('/:id/posts', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
+    console.log(`[blogsController]: ${(new Date()).toISOString()} - start GET:/${id}/posts`);
+    if (!ObjectId.isValid(id)) return res.sendStatus(404);
     const blogIsExist = await getBlogById(id);
     if (!blogIsExist) return res.sendStatus(404);
     const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
@@ -49,11 +61,27 @@ blogsRouter.get('/:id/posts', async (req: RequestWithId, res: Response) => {
     return res.status(200).json(result);
 });
 
+blogsRouter.post('/:id/posts',
+    validatePostInputModel(),
+    validateResult,
+    async (req: RequestWithId, res: Response) => {
+        const {title, shortDescription, content} = req.body;
+        const id = req.params.id;
+        if (!ObjectId.isValid(id)) return res.sendStatus(404);
+
+        console.log(`[blogsController]: ${(new Date()).toISOString()} - start POST:/${id}/posts`);
+        const blogIsExist = await getBlogById(id);
+        if (!blogIsExist) return res.sendStatus(404);
+        const result = await createNewPost({title, blogId: id, content, shortDescription});
+        return res.status(201).json(result);
+    });
+
 blogsRouter.put('/:id',
     validateBlogInputModel(),
     validateResult,
     async (req: RequestWithIdAndBody<BlogInputModelDto>, res: Response) => {
         const id = req.params.id;
+        if (!ObjectId.isValid(id)) return res.sendStatus(404);
         const blog = await getBlogById(id);
         if (!blog) return res.sendStatus(404);
         const {name, websiteUrl, description} = req.body;
@@ -64,6 +92,7 @@ blogsRouter.put('/:id',
 
 blogsRouter.delete('/:id', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
+    if (!ObjectId.isValid(id)) return res.sendStatus(404);
     const result = await deleteBlogById(id);
     return result ? res.sendStatus(204) : res.sendStatus(404);
 });
