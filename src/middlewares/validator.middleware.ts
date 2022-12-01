@@ -44,6 +44,8 @@ export const validatorMiddleware = {
             .trim()
             .isLength({min: 1, max: 1000})
             .withMessage('content must be at max 1000 chars long'),
+    ],
+    validateBlogId: () => [
         body('blogId')
             .trim()
             .custom(
