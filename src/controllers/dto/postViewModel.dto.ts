@@ -7,12 +7,3 @@ export interface PostViewModelDto {
     blogName:string;
     createdAt:string;
 }
-
-export interface PostsViewModelPaginatorDto {
-    pagesCount: number;
-    page: number;
-    pageSize: number;
-    totalCount: number;
-    items: PostViewModelDto[];
-
-}
