@@ -9,3 +9,5 @@ export const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {
         sortDirection: req.query.sortDirection === 'asc' ? 'asc' : 'desc'
     };
 };
+
+export const pagesCount = (totalCount: number, pageSize: number) => Math.ceil(totalCount / pageSize)
