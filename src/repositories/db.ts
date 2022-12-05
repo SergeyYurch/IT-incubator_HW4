@@ -2,6 +2,7 @@ import {MongoClient} from 'mongodb';
 import {BlogEntity} from "../services/entities/blog.entity";
 import {PostEntity} from "../services/entities/post.entity";
 import * as dotenv from "dotenv";
+import {UserEntity} from "../services/entities/user.entity";
 dotenv.config();
 
 const mongoUri = process.env.MONGO_URI
@@ -12,6 +13,7 @@ const client = new MongoClient(mongoUri)
 const db = client.db();
 export const blogsCollection = db.collection<BlogEntity>('blogs')
 export const postsCollection = db.collection<PostEntity>('posts')
+export const usersCollection = db.collection<UserEntity>('users')
 
 export async function runDB() {
     try{
