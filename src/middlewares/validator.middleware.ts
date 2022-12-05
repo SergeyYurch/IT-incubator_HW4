@@ -4,6 +4,40 @@ import {APIErrorResultModel} from "../controllers/dto/apiErrorResult.dto";
 import {queryRepository} from "../repositories/queryRepository";
 
 export const validatorMiddleware = {
+    validateAuthInputModel: () => [
+        body('loginOrEmail')
+            .trim()
+            .isLength({min: 1})
+            .withMessage('name must be min 1 chars long')
+            .exists()
+            .withMessage('loginOrEmail is required'),
+        body('password')
+            .exists()
+            .withMessage('password is required')
+            .isLength({min: 1, max: 500})
+            .withMessage('password must be min 1 chars long')
+    ],
+    validateUserInputModel: () => [
+        body('login')
+            .trim()
+            .isLength({min: 3, max:10})
+            .withMessage('length of login must be 3-10 chars')
+            .matches(/^[a-zA-Z0-9_-]*$/)
+            .withMessage('login is wrong')
+            .exists()
+            .withMessage('login is required'),
+        body('password')
+            .isLength({min: 6, max:20})
+            .withMessage('length of password must be  6-20 chars')
+            .exists()
+            .withMessage('password is required'),
+        body('email')
+            .trim()
+            .exists()
+            .withMessage('email is required')
+            .matches(/^[\w-.]+@([\w-]+.)+[\w-]{2,4}$/)
+            .withMessage('email is wrong')
+    ],
     validateBlogInputModel: () => [
         body('name')
             .trim()
@@ -14,7 +48,7 @@ export const validatorMiddleware = {
         body('description')
             .trim()
             .exists()
-            .withMessage('name is required')
+            .withMessage('description is required')
             .isLength({min: 1, max: 500})
             .withMessage('length is wrong'),
         body('websiteUrl')
