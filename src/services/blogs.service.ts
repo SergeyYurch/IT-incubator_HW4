@@ -4,7 +4,7 @@ import {BlogsServiceInterface} from "./blogs.service.interface";
 import {BlogInputModelDto} from "../controllers/dto/blogInputModel.dto";
 import {BlogEntity} from "./entities/blog.entity";
 import {BlogEditEntity} from "./entities/blog-edit.entity";
-import {queryRepository} from "../repositories/queryRepository";
+import {queryRepository} from "../repositories/query.repository";
 
 const {
     createNewBlog,

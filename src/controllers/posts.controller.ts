@@ -1,13 +1,13 @@
 import {Router, Request, Response} from "express";
 import {validatorMiddleware} from "../middlewares/validator.middleware";
-import {postsService} from "../services/postsService";
+import {postsService} from "../services/posts.service";
 import {PostInputModelDto} from "./dto/postInputModel.dto";
 import {
     RequestWithBody, RequestWithId,
     RequestWithIdAndBody
 } from "../types/request.type";
-import {queryRepository} from "../repositories/queryRepository";
-import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
+import {queryRepository} from "../repositories/query.repository";
+import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
 import {parseQueryPaginator} from "../helpers/helpers";
 
 export const postsRouter = Router();

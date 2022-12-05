@@ -6,10 +6,10 @@ import {
     RequestWithId, RequestWithIdAndBody,
 } from "../types/request.type";
 import {BlogInputModelDto} from "./dto/blogInputModel.dto";
-import {queryRepository} from "../repositories/queryRepository";
-import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
+import {queryRepository} from "../repositories/query.repository";
+import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
 import {parseQueryPaginator} from "../helpers/helpers";
-import {postsService} from "../services/postsService";
+import {postsService} from "../services/posts.service";
 import {ObjectId} from "mongodb";
 
 export const blogsRouter = Router();

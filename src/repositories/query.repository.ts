@@ -1,6 +1,6 @@
 import {blogsCollection, postsCollection, usersCollection} from "./db";
 import {ObjectId} from "mongodb";
-import {PaginatorOptionInterface, QueryRepositoryInterface} from "./queryRepository.interface";
+import {PaginatorOptionInterface, QueryRepositoryInterface} from "./query.repository.interface";
 import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
 import {PostViewModelDto} from "../controllers/dto/postViewModel.dto";
 import {PaginatorDto} from "../controllers/dto/paginatorDto";

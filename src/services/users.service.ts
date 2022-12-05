@@ -1,7 +1,7 @@
 import {UserEntity} from "./entities/user.entity";
 import bcrypt from 'bcrypt';
 import {LoginInputModel} from "../controllers/dto/loginInputModel.dto";
-import {usersRepository} from "../repositories/usersRepository";
+import {usersRepository} from "../repositories/users.repository";
 import {UserViewModelDto} from "../controllers/dto/userViewModel.dto";
 
 const {findUserByEmailOrPassword, createNewUser, deleteUserById} = usersRepository;

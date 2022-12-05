@@ -1,7 +1,7 @@
 import {usersCollection} from "./db";
 import {ObjectId, WithId} from "mongodb";
 import {UserEntity} from "../services/entities/user.entity";
-import {UsersRepositoryInterface} from "./usersRepository.interface";
+import {UsersRepositoryInterface} from "./users.repository.interface";
 
 export const usersRepository: UsersRepositoryInterface = {
     findUserByEmailOrPassword: async (loginOrEmail: string): Promise<WithId<UserEntity> | null> => {

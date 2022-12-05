@@ -1,5 +1,5 @@
 import {Request} from "express";
-import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
+import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
 
 export const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {
     return {

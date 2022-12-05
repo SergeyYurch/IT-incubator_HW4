@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import {body, validationResult} from 'express-validator';
 import {APIErrorResultModel} from "../controllers/dto/apiErrorResult.dto";
-import {queryRepository} from "../repositories/queryRepository";
+import {queryRepository} from "../repositories/query.repository";
 
 export const validatorMiddleware = {
     validateAuthInputModel: () => [

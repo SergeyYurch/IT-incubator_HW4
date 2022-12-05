@@ -1,13 +1,12 @@
 import {PostEntity} from "../services/entities/post.entity";
-import {PostDbInterface} from "./repository.interface";
 import {postsCollection} from "./db";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import {PostEditEntity} from "../services/entities/postEdit.entity";
-import {PostsRepositoryInterface} from "./postsRepository.interface";
+import {PostsRepositoryInterface} from "./posts.repository.interface";
 
 export const postsRepository: PostsRepositoryInterface = {
 
-    createNewPost: async (inputPost: PostEntity): Promise<PostDbInterface | null> => {
+    createNewPost: async (inputPost: PostEntity): Promise<WithId<PostEntity> | null> => {
         console.log(`[repository]:start createNewPost`);
         const result = await postsCollection.insertOne(inputPost);
         return await postsCollection.findOne({_id: result.insertedId});

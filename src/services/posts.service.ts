@@ -4,7 +4,7 @@ import {repository} from "../repositories/repository";
 import {PostEntity} from "./entities/post.entity";
 import {PostsServiceInterface} from "./posts.service.interface";
 import {PostEditEntity} from "./entities/postEdit.entity";
-import {queryRepository} from "../repositories/queryRepository";
+import {queryRepository} from "../repositories/query.repository";
 
 const {
     createNewPost,

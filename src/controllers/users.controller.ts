@@ -4,8 +4,8 @@ import {
     RequestWithBody,
     RequestWithId
 } from "../types/request.type";
-import {queryRepository} from "../repositories/queryRepository";
-import {PaginatorOptionInterface} from "../repositories/queryRepository.interface";
+import {queryRepository} from "../repositories/query.repository";
+import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
 import {parseQueryPaginator} from "../helpers/helpers";
 import {ObjectId} from "mongodb";
 import {usersService} from "../services/users.service";

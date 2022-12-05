@@ -3,7 +3,7 @@ import {BlogDbInterface} from "./repository.interface";
 import {blogsCollection} from "./db";
 import {ObjectId} from "mongodb";
 import {BlogEditEntity} from "../services/entities/blog-edit.entity";
-import {BlogsRepositoryInterface} from "./blogsRepository.interface";
+import {BlogsRepositoryInterface} from "./blogs.repository.interface";
 
 export const blogsRepository: BlogsRepositoryInterface = {
 
