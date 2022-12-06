@@ -13,7 +13,18 @@ export const usersRepository: UsersRepositoryInterface = {
         return null;
     },
     deleteUserById: async (id: string): Promise<boolean> => {
-        const result = await usersCollection.deleteOne({_id:new ObjectId(id)});
+        const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
         return result.acknowledged;
+    },
+    getUserById: async (id: string): Promise<UserEntity | null> => {
+        const result = await usersCollection.findOne({_id: new ObjectId(id)});
+        if (!result) return null;
+        return {
+            login: result.login,
+            email: result.email,
+            passwordHash: result.passwordHash,
+            passwordSalt: result.passwordSalt,
+            createdAt: result.createdAt
+        };
     }
 };

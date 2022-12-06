@@ -5,4 +5,5 @@ export interface UsersRepositoryInterface {
     findUserByEmailOrPassword: (loginOrEmail: string) => Promise<WithId<UserEntity> | null>,
     createNewUser: (user: UserEntity) => Promise<string | null>;
     deleteUserById: (id: string) => Promise<boolean>;
+    getUserById: (id: string) => Promise<UserEntity | null>
 }
