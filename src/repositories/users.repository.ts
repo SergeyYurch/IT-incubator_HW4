@@ -13,7 +13,7 @@ export const usersRepository: UsersRepositoryInterface = {
         return null;
     },
     deleteUserById: async (id: string): Promise<boolean> => {
-        const result = await usersCollection.deleteOne(new ObjectId(id));
+        const result = await usersCollection.deleteOne({_id:new ObjectId(id)});
         return result.acknowledged;
     }
 };
