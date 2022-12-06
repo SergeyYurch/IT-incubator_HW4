@@ -1,16 +1,16 @@
 import {PostViewModelDto} from "../controllers/dto/postViewModel.dto";
 import {PostInputModelDto} from "../controllers/dto/postInputModel.dto";
-import {repository} from "../repositories/repository";
 import {PostEntity} from "./entities/post.entity";
 import {PostsServiceInterface} from "./posts.service.interface";
 import {PostEditEntity} from "./entities/postEdit.entity";
 import {queryRepository} from "../repositories/query.repository";
+import {postsRepository} from "../repositories/posts.repository";
 
 const {
     createNewPost,
     updatePostById,
     deletePostById,
-} = repository;
+} = postsRepository;
 
 const {getBlogById} = queryRepository
 
