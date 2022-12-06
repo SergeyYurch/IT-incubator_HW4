@@ -17,7 +17,7 @@ const {
     validateUserInputModel,
     validateResult
 } = validatorMiddleware;
-const {createUser, deleteUserById, findUserByEmailOrPassword} = usersService;
+const {createUser, deleteUserById, findUserByEmailOrPassword, getUserById} = usersService;
 const {getAllUsers} = queryRepository;
 
 
@@ -44,6 +44,8 @@ usersRouter.get('/', async (req: Request, res: Response) => {
 usersRouter.delete('/:id', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
     if (!ObjectId.isValid(id)) return res.sendStatus(404);
+    const isExistUser = await getUserById(id);
+    if (!isExistUser) return res.sendStatus(404)
     const result = await deleteUserById(id);
-    return result ? res.sendStatus(204) : res.sendStatus(404);
+    return result ? res.sendStatus(204) : res.sendStatus(401);
 });
