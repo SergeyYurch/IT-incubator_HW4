@@ -5,6 +5,7 @@ import {UsersRepositoryInterface} from "./users.repository.interface";
 
 export const usersRepository: UsersRepositoryInterface = {
     findUserByEmailOrPassword: async (loginOrEmail: string): Promise<WithId<UserEntity> | null> => {
+        console.log(`[findUserByEmailOrPassword]: loginOrEmail:${loginOrEmail}`);
         return await usersCollection.findOne({$or: [{email: loginOrEmail}, {login: loginOrEmail}]});
     },
     createNewUser: async (user: UserEntity): Promise<string | null> => {

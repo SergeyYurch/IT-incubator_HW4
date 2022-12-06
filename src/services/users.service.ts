@@ -12,7 +12,6 @@ export const usersService:UsersServiceInterface = {
     async createUser(login: string, email: string, password: string): Promise<UserViewModelDto | null> {
         const createdAt = new Date().toISOString();
         const passwordSalt = await bcrypt.genSalt(10);
-        debugger
         const passwordHash = await generateHash(password, passwordSalt);
         const newUser: UserEntity = {
             login, email, passwordHash, createdAt, passwordSalt
@@ -55,6 +54,7 @@ export const usersService:UsersServiceInterface = {
     async checkCredentials(credentials: LoginInputModel): Promise<boolean> {
         const {loginOrEmail, password} = credentials;
         const user = await findUserByEmailOrPassword(loginOrEmail);
+        console.log(user);
         if (!user) return false;
         const passwordHash = await generateHash(password, user.passwordSalt);
         return passwordHash === user.passwordHash;

@@ -17,8 +17,10 @@ authRouter.post('/login',
     validateResult,
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const { loginOrEmail, password} = req.body;
-
+        console.log(`authRouter login:${loginOrEmail}, pass: ${password}`);
         const result = await checkCredentials({loginOrEmail, password});
+        console.log(`authRouter checkCredentials: ${result}`);
+
         return result ? res.sendStatus(204) : res.sendStatus(401);
     });
 
