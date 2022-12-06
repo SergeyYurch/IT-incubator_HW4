@@ -1,13 +1,12 @@
 import {BlogEntity} from "../services/entities/blog.entity";
-import {BlogDbInterface} from "./repository.interface";
 import {blogsCollection} from "./db";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import {BlogEditEntity} from "../services/entities/blog-edit.entity";
 import {BlogsRepositoryInterface} from "./blogs.repository.interface";
 
 export const blogsRepository: BlogsRepositoryInterface = {
 
-    createNewBlog: async (inputBlog: BlogEntity): Promise<BlogDbInterface | null> => {
+    createNewBlog: async (inputBlog: BlogEntity): Promise<WithId<BlogEntity> | null> => {
         console.log(`[repository]:start createNewBlog`);
         const result = await blogsCollection.insertOne(inputBlog);
         return await blogsCollection.findOne({_id: result.insertedId});
