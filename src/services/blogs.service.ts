@@ -1,16 +1,16 @@
-import {repository} from "../repositories/repository";
 import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
 import {BlogsServiceInterface} from "./blogs.service.interface";
 import {BlogInputModelDto} from "../controllers/dto/blogInputModel.dto";
 import {BlogEntity} from "./entities/blog.entity";
 import {BlogEditEntity} from "./entities/blog-edit.entity";
 import {queryRepository} from "../repositories/query.repository";
+import {blogsRepository} from "../repositories/blogs.repository";
 
 const {
     createNewBlog,
     updateBlogById,
     deleteBlogById
-} = repository;
+} = blogsRepository;
 
 const { getBlogById} = queryRepository
 export const blogsService:BlogsServiceInterface = {
