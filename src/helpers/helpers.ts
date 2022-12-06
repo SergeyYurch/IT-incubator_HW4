@@ -1,5 +1,6 @@
 import {Request} from "express";
 import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
+import bcrypt from "bcrypt";
 
 export const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {
     return {
@@ -10,4 +11,8 @@ export const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {
     };
 };
 
-export const pagesCount = (totalCount: number, pageSize: number) => Math.ceil(totalCount / pageSize)
+export const pagesCount = (totalCount: number, pageSize: number) => Math.ceil(totalCount / pageSize);
+
+export const generateHash = async (password: string, salt: string): Promise<string> => {
+    return await bcrypt.hash(password, salt);
+};
