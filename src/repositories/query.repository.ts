@@ -140,8 +140,10 @@ export const queryRepository: QueryRepositoryInterface = {
         const searchQuery = [];
         let filter = {};
         if (searchLoginTerm) searchQuery.push({login: {$regex: searchLoginTerm, $options: 'i'}});
-        if (searchEmailTerm) searchQuery.push({login: {$regex: searchEmailTerm, $options: 'i'}});
-        if (searchQuery.length > 0) filter = {$or: [{email: {$regex: searchEmailTerm}}, {login: {$regex: searchLoginTerm}}]};
+        if (searchEmailTerm) searchQuery.push({email: {$regex: searchEmailTerm, $options: 'i'}});
+        console.log('searchQuery=============================');
+        console.log(searchQuery);
+        if (searchQuery.length > 0) filter = {$or: searchQuery};
         const totalCount = await usersCollection.count(filter);
         const result = await usersCollection.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
