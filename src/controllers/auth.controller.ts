@@ -3,6 +3,7 @@ import {validatorMiddleware} from "../middlewares/validator.middleware";
 import {RequestWithBody} from "../types/request.type";
 import {LoginInputModel} from "./dto/loginInputModel.dto";
 import {usersService} from "../services/users.service";
+import {jwtService} from "../helpers/jwt-service";
 
 export const authRouter = Router();
 
@@ -17,10 +18,16 @@ authRouter.post('/login',
     validateResult,
     async (req: RequestWithBody<LoginInputModel>, res: Response) => {
         const { loginOrEmail, password} = req.body;
-        console.log(`authRouter login:${loginOrEmail}, pass: ${password}`);
-        const result = await checkCredentials({loginOrEmail, password});
-        console.log(`authRouter checkCredentials: ${result}`);
-
-        return result ? res.sendStatus(204) : res.sendStatus(401);
+        console.log(`!!!![authRouter] login:${loginOrEmail}, pass: ${password}`);
+        debugger
+        const user = await checkCredentials({loginOrEmail, password});
+        if (user){
+            const token= await jwtService.createJWT(user)
+            return res.status(200).send({
+                "accessToken": token
+            })
+        } else {
+            return res.sendStatus(401);
+        }
     });
 
