@@ -1,5 +1,5 @@
 import {WithId} from "mongodb";
-import {UserEntity} from "../services/entities/user.entity";
+import {UserEntity} from "../../services/entities/user.entity";
 
 export interface UsersRepositoryInterface {
     findUserByEmailOrPassword: (loginOrEmail: string) => Promise<WithId<UserEntity> | null>,

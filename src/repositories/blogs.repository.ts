@@ -2,7 +2,7 @@ import {BlogEntity} from "../services/entities/blog.entity";
 import {blogsCollection} from "./db";
 import {ObjectId, WithId} from "mongodb";
 import {BlogEditEntity} from "../services/entities/blog-edit.entity";
-import {BlogsRepositoryInterface} from "./blogs.repository.interface";
+import {BlogsRepositoryInterface} from "./interfaces/blogs.repository.interface";
 
 export const blogsRepository: BlogsRepositoryInterface = {
 

@@ -1,5 +1,5 @@
 import {Request} from "express";
-import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
+import {PaginatorOptionInterface} from "../repositories/interfaces/query.repository.interface";
 import bcrypt from "bcrypt";
 
 export const parseQueryPaginator = (req: Request): PaginatorOptionInterface => {

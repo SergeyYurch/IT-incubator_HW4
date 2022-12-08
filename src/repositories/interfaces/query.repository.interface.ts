@@ -1,7 +1,7 @@
-import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
-import { PostViewModelDto} from "../controllers/dto/postViewModel.dto";
-import {PaginatorDto} from "../controllers/dto/paginatorDto";
-import {UserViewModelDto} from "../controllers/dto/userViewModel.dto";
+import {BlogViewModelDto} from "../../controllers/dto/blogViewModel.dto";
+import { PostViewModelDto} from "../../controllers/dto/postViewModel.dto";
+import {PaginatorDto} from "../../controllers/dto/paginatorDto";
+import {UserViewModelDto} from "../../controllers/dto/userViewModel.dto";
 
 
 export interface PaginatorOptionInterface {

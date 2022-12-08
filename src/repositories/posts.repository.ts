@@ -2,7 +2,7 @@ import {PostEntity} from "../services/entities/post.entity";
 import {postsCollection} from "./db";
 import {ObjectId, WithId} from "mongodb";
 import {PostEditEntity} from "../services/entities/postEdit.entity";
-import {PostsRepositoryInterface} from "./posts.repository.interface";
+import {PostsRepositoryInterface} from "./interfaces/posts.repository.interface";
 
 export const postsRepository: PostsRepositoryInterface = {
 

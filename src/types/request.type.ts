@@ -4,4 +4,4 @@ export type RequestWithBody<T> = Request<{}, {}, T>;
 export type RequestWithParams<T> = Request<T>;
 export type RequestWithId= Request<{id:string}>;
 export type  RequestWithParamsAndBody<T, B> = Request<T, {}, B>
-export type  RequestWithIdAndBody<T> = Request<{id:string}, {},T>
+export type  RequestWithIdAndBody<T> = Request<{[id:string]:string}, {},T>

@@ -1,5 +1,5 @@
-import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
-import {BlogInputModelDto} from "../controllers/dto/blogInputModel.dto";
+import {BlogViewModelDto} from "../../controllers/dto/blogViewModel.dto";
+import {BlogInputModelDto} from "../../controllers/dto/blogInputModel.dto";
 
 
 export interface BlogsServiceInterface {

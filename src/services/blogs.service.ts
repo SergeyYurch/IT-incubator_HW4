@@ -1,5 +1,5 @@
 import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
-import {BlogsServiceInterface} from "./blogs.service.interface";
+import {BlogsServiceInterface} from "./interfaces/blogs.service.interface";
 import {BlogInputModelDto} from "../controllers/dto/blogInputModel.dto";
 import {BlogEntity} from "./entities/blog.entity";
 import {BlogEditEntity} from "./entities/blog-edit.entity";

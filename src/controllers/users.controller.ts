@@ -5,11 +5,12 @@ import {
     RequestWithId
 } from "../types/request.type";
 import {queryRepository} from "../repositories/query.repository";
-import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
+import {PaginatorOptionInterface} from "../repositories/interfaces/query.repository.interface";
 import {parseQueryPaginator} from "../helpers/helpers";
 import {ObjectId} from "mongodb";
 import {usersService} from "../services/users.service";
 import {UserInputModelDto} from "./dto/userInputModel.dto";
+import {authBasicMiddleware} from "../middlewares/authBasic.middleware";
 
 export const usersRouter = Router();
 
@@ -22,6 +23,7 @@ const {getAllUsers} = queryRepository;
 
 
 usersRouter.post('/',
+    authBasicMiddleware,
     validateUserInputModel(),
     validateResult,
     async (req: RequestWithBody<UserInputModelDto>, res: Response) => {
@@ -33,7 +35,9 @@ usersRouter.post('/',
     });
 
 
-usersRouter.get('/', async (req: Request, res: Response) => {
+usersRouter.get('/',
+    authBasicMiddleware,
+    async (req: Request, res: Response) => {
     const searchLoginTerm: string | null = req.query.searchLoginTerm ? String(req.query.searchLoginTerm) : null;
     const searchEmailTerm: string | null = req.query.searchEmailTerm ? String(req.query.searchEmailTerm) : null;
     const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
@@ -41,7 +45,9 @@ usersRouter.get('/', async (req: Request, res: Response) => {
     return res.status(200).json(result);
 });
 
-usersRouter.delete('/:id', async (req: RequestWithId, res: Response) => {
+usersRouter.delete('/:id',
+    authBasicMiddleware,
+    async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
     if (!ObjectId.isValid(id)) return res.sendStatus(404);
     const isExistUser = await getUserById(id);

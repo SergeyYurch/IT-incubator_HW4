@@ -1,6 +1,6 @@
 import {
     RepositoryInterface
-} from "./repository.interface";
+} from "./interfaces/repository.interface";
 import {blogsCollection, postsCollection, usersCollection} from "./db";
 
 export const repository: RepositoryInterface = {

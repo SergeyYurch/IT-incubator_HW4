@@ -7,10 +7,11 @@ import {
 } from "../types/request.type";
 import {BlogInputModelDto} from "./dto/blogInputModel.dto";
 import {queryRepository} from "../repositories/query.repository";
-import {PaginatorOptionInterface} from "../repositories/query.repository.interface";
+import {PaginatorOptionInterface} from "../repositories/interfaces/query.repository.interface";
 import {parseQueryPaginator} from "../helpers/helpers";
 import {postsService} from "../services/posts.service";
 import {ObjectId} from "mongodb";
+import {authBasicMiddleware} from "../middlewares/authBasic.middleware";
 
 export const blogsRouter = Router();
 
@@ -33,6 +34,7 @@ blogsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 blogsRouter.post('/',
+    authBasicMiddleware,
     validateBlogInputModel(),
     validateResult,
     async (req: RequestWithBody<BlogInputModelDto>, res: Response) => {
@@ -62,6 +64,7 @@ blogsRouter.get('/:id/posts', async (req: RequestWithId, res: Response) => {
 });
 
 blogsRouter.post('/:id/posts',
+    authBasicMiddleware,
     validatePostInputModel(),
     validateResult,
     async (req: RequestWithId, res: Response) => {
@@ -77,6 +80,7 @@ blogsRouter.post('/:id/posts',
     });
 
 blogsRouter.put('/:id',
+    authBasicMiddleware,
     validateBlogInputModel(),
     validateResult,
     async (req: RequestWithIdAndBody<BlogInputModelDto>, res: Response) => {
@@ -90,7 +94,9 @@ blogsRouter.put('/:id',
         return !result ? res.sendStatus(500) : res.sendStatus(204);
     });
 
-blogsRouter.delete('/:id', async (req: RequestWithId, res: Response) => {
+blogsRouter.delete('/:id',
+    authBasicMiddleware,
+    async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
     if (!ObjectId.isValid(id)) return res.sendStatus(404);
     const result = await deleteBlogById(id);

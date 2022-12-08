@@ -4,7 +4,8 @@ import {LoginInputModel} from "../controllers/dto/loginInputModel.dto";
 import {usersRepository} from "../repositories/users.repository";
 import {UserViewModelDto} from "../controllers/dto/userViewModel.dto";
 import {generateHash} from "../helpers/helpers";
-import {UsersServiceInterface} from "./users.service.interface";
+import {UsersServiceInterface} from "./interfaces/users.service.interface";
+import {WithId} from "mongodb";
 
 const {findUserByEmailOrPassword, createNewUser, deleteUserById, getUserById} = usersRepository;
 
@@ -51,13 +52,13 @@ export const usersService:UsersServiceInterface = {
         };
     },
 
-    async checkCredentials(credentials: LoginInputModel): Promise<boolean> {
+    async checkCredentials(credentials: LoginInputModel): Promise<WithId<UserEntity> | null> {
         const {loginOrEmail, password} = credentials;
         const user = await findUserByEmailOrPassword(loginOrEmail);
-        console.log(user);
-        if (!user) return false;
+        if (!user) return null;
         const passwordHash = await generateHash(password, user.passwordSalt);
-        return passwordHash === user.passwordHash;
+        if ( passwordHash === user.passwordHash) return user;
+        return null
     },
 
 };
