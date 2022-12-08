@@ -4,6 +4,13 @@ import {APIErrorResultModel} from "../controllers/dto/apiErrorResult.dto";
 import {queryRepository} from "../repositories/query.repository";
 
 export const validatorMiddleware = {
+    validateCommentInputModel: () => [
+        body('content')
+            .exists()
+            .withMessage('content is required')
+            .isLength({min: 20, max: 300})
+            .withMessage('content length is wrong')
+    ],
     validateAuthInputModel: () => [
         body('loginOrEmail')
             .trim()
@@ -20,14 +27,14 @@ export const validatorMiddleware = {
     validateUserInputModel: () => [
         body('login')
             .trim()
-            .isLength({min: 3, max:10})
+            .isLength({min: 3, max: 10})
             .withMessage('length of login must be 3-10 chars')
             .matches(/^[a-zA-Z0-9_-]*$/)
             .withMessage('login is wrong')
             .exists()
             .withMessage('login is required'),
         body('password')
-            .isLength({min: 6, max:20})
+            .isLength({min: 6, max: 20})
             .withMessage('length of password must be  6-20 chars')
             .exists()
             .withMessage('password is required'),
