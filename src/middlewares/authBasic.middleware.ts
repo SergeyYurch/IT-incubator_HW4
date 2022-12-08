@@ -7,10 +7,7 @@ const pass = 'qwerty';
 const base64String = encode(`${login}:${pass}`);
 const validAuthString = `Basic ${base64String}`;
 
-export const authGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    if (req.url === '/testing/all-data') return next();
-    if (req.url === '/auth/login') return next();
-    console.log('authGuardMiddleware');
+export const authBasicMiddleware = (req: Request, res: Response, next: NextFunction) => {
     if (noneAuthMethods.includes(req.method) || validAuthString === req.headers.authorization) {
         return next();
     }
