@@ -12,7 +12,9 @@ import {parseQueryPaginator} from "../helpers/helpers";
 import {authBasicMiddleware} from "../middlewares/authBasic.middleware";
 import {authBearerMiddleware} from "../middlewares/authBearer.middleware";
 import {CommentInputModelDto} from "./dto/commentInputModel.dto";
-import {CommentViewModelDto} from "./dto/commentViewModel.dto";
+import {commentsService} from "../services/comments.service";
+import {ObjectId} from "mongodb";
+import {usersService} from "../services/users.service";
 
 export const postsRouter = Router();
 const {
@@ -22,7 +24,9 @@ const {
     validateCommentInputModel
 } = validatorMiddleware;
 const {deletePostById, editPostById, createNewPost} = postsService;
-const {getPostById, getAllPosts} = queryRepository;
+const {getPostById, getAllPosts, findAllCommentsByUserId,} = queryRepository;
+const {getUserById} = usersService;
+const {createUserComment} = commentsService;
 
 postsRouter.get('/', async (req: Request, res: Response) => {
     const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
@@ -45,6 +49,7 @@ postsRouter.post(
 
 postsRouter.get('/:id', async (req: RequestWithId, res: Response) => {
     const id = req.params.id;
+    if (!ObjectId.isValid(id)) return res.sendStatus(404);
     const result = await getPostById(id);
     return result ? res.status(200).json(result) : res.sendStatus(404);
 });
@@ -58,7 +63,7 @@ postsRouter.put(
     async (req: RequestWithIdAndBody<PostInputModelDto>, res: Response
     ) => {
         const id = req.params.id;
-        if (!(await getPostById(id))) return res.sendStatus(404);
+        if (!ObjectId.isValid(id) || !(await getPostById(id))) return res.sendStatus(404);
         const body = req.body;
         const post: PostInputModelDto = {
             title: body.title,
@@ -74,7 +79,7 @@ postsRouter.delete('/:id',
     authBasicMiddleware,
     async (req: RequestWithId, res: Response) => {
         const id = req.params.id;
-        if (!(await getPostById(id))) return res.sendStatus(404);
+        if (!ObjectId.isValid(id) || !(await getPostById(id))) return res.sendStatus(404);
         const result = await deletePostById(id);
         return result ? res.sendStatus(204) : res.sendStatus(500);
     });
@@ -89,9 +94,16 @@ postsRouter.post(
     ) => {
         const postId = req.params.postId;
         const userId = req.user!.id;
-        if (!(await getPostById(postId))) return res.sendStatus(404);
+        if (!userId) return res.sendStatus(401);
+        const userInDb = getUserById(userId);
+        if (!userInDb) return res.sendStatus(401);
+        console.log(`[postsController]: created new comment for post id:${postId} from user id:${userId}`);
+        if (!ObjectId.isValid(postId) || !(await getPostById(postId))) {
+            console.log(`[postsController]: wrong post id:${postId}`);
+            return res.sendStatus(404);
+        }
         const {content} = req.body;
-        const createdComment: CommentViewModelDto = await createNewComment(content, userId);
+        const createdComment = await createUserComment({content}, userId, postId);
         return createdComment ? res.status(201).json(createdComment) : res.sendStatus(500);
     });
 
@@ -100,9 +112,12 @@ postsRouter.get('/:postId/comments',
     authBearerMiddleware,
     async (req: RequestWithIdAndBody<CommentInputModelDto>, res: Response) => {
         const postId = req.params.postId;
-        if (!(await getPostById(postId))) return res.sendStatus(404);
+        if (!ObjectId.isValid(postId) || !(await getPostById(postId))) return res.sendStatus(404);
         const userId = req.user!.id;
+        if (!userId) return res.sendStatus(401);
+        const userInDb = getUserById(userId);
+        if (!userInDb) return res.sendStatus(401);
         const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
-        const result = await getUserComments(userId);
+        const result = await findAllCommentsByUserId(userId, paginatorOption);
         return result ? res.status(200).json(result) : res.sendStatus(500);
     });
