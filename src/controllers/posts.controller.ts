@@ -112,6 +112,8 @@ postsRouter.get('/:postId/comments',
     authBearerMiddleware,
     async (req: RequestWithIdAndBody<CommentInputModelDto>, res: Response) => {
         const postId = req.params.postId;
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.log(await getPostById(postId));
         if (!ObjectId.isValid(postId) || !(await getPostById(postId))) return res.sendStatus(404);
         const userId = req.user!.id;
         if (!userId) return res.sendStatus(401);
