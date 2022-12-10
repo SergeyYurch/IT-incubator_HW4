@@ -28,11 +28,11 @@ commentsRouter.put('/:commentId',
     async (req: RequestWithIdAndBody<CommentInputModelDto>, res: Response) => {
         const id = req.params.commentId;
         console.log(`[commentsController]:PUT - edit comment by ID: ${id}`);
-        if (!ObjectId.isValid(id)) return res.sendStatus(404);
         const userId = req.user!.id;
         if (!userId) return res.sendStatus(401);
         const userInDb = await getUserById(userId);
         if (!userInDb || userInDb.id !== userId ) return res.sendStatus(401);
+        if (!ObjectId.isValid(id)) return res.sendStatus(404);
         const {content} = req.body;
         const commentInDB = await getCommentById(id);
         if (!commentInDB) return res.sendStatus(404);
