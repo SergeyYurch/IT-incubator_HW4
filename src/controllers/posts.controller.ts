@@ -24,7 +24,7 @@ const {
     validateCommentInputModel
 } = validatorMiddleware;
 const {deletePostById, editPostById, createNewPost} = postsService;
-const {getPostById, getAllPosts, findAllCommentsByUserId,} = queryRepository;
+const {getPostById, getAllPosts, findAllCommentsByPostId} = queryRepository;
 const {getUserById} = usersService;
 const {createUserComment} = commentsService;
 
@@ -109,17 +109,12 @@ postsRouter.post(
 
 
 postsRouter.get('/:postId/comments',
-    authBearerMiddleware,
     async (req: RequestWithIdAndBody<CommentInputModelDto>, res: Response) => {
         const postId = req.params.postId;
         console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         console.log(await getPostById(postId));
         if (!ObjectId.isValid(postId) || !(await getPostById(postId))) return res.sendStatus(404);
-        const userId = req.user!.id;
-        if (!userId) return res.sendStatus(401);
-        const userInDb = getUserById(userId);
-        if (!userInDb) return res.sendStatus(401);
         const paginatorOption: PaginatorOptionInterface = parseQueryPaginator(req);
-        const result = await findAllCommentsByUserId(userId, paginatorOption);
+        const result = await findAllCommentsByPostId(postId, paginatorOption);
         return result ? res.status(200).json(result) : res.sendStatus(500);
     });

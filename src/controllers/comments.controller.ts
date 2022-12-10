@@ -8,6 +8,7 @@ import {ObjectId} from "mongodb";
 import {authBearerMiddleware} from "../middlewares/authBearer.middleware";
 import {commentsService} from "../services/comments.service";
 import {CommentInputModelDto} from "./dto/commentInputModel.dto";
+import {usersService} from "../services/users.service";
 
 export const commentsRouter = Router();
 
@@ -17,6 +18,7 @@ const {
 } = validatorMiddleware;
 const {deleteCommentById, editComment} = commentsService;
 const {getCommentById} = queryRepository;
+const {getUserById} = usersService
 
 
 commentsRouter.put('/:commentId',
@@ -28,6 +30,9 @@ commentsRouter.put('/:commentId',
         console.log(`[commentsController]:PUT - edit comment by ID: ${id}`);
         if (!ObjectId.isValid(id)) return res.sendStatus(404);
         const userId = req.user!.id;
+        if (!userId) return res.sendStatus(401);
+        const userInDb = getUserById(userId);
+        if (!userInDb) return res.sendStatus(401);
         const {content} = req.body;
         const commentInDB = await getCommentById(id);
         if (!commentInDB) return res.sendStatus(404);
@@ -43,6 +48,9 @@ commentsRouter.delete('/:commentId',
         const id = req.params.commentId;
         if (!ObjectId.isValid(id) || !await getCommentById(id)) return res.sendStatus(404);
         const userId = req.user!.id;
+        if (!userId) return res.sendStatus(401);
+        const userInDb = getUserById(userId);
+        if (!userInDb) return res.sendStatus(401);
         const commentInDB = await getCommentById(id);
         if (!commentInDB) return res.sendStatus(404);
         if (commentInDB.userId !== userId) return res.sendStatus(403);
