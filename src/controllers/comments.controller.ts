@@ -31,8 +31,8 @@ commentsRouter.put('/:commentId',
         if (!ObjectId.isValid(id)) return res.sendStatus(404);
         const userId = req.user!.id;
         if (!userId) return res.sendStatus(401);
-        const userInDb = getUserById(userId);
-        if (!userInDb) return res.sendStatus(401);
+        const userInDb = await getUserById(userId);
+        if (!userInDb || userInDb.id !== userId ) return res.sendStatus(401);
         const {content} = req.body;
         const commentInDB = await getCommentById(id);
         if (!commentInDB) return res.sendStatus(404);
