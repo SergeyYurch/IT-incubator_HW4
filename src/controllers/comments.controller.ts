@@ -49,8 +49,8 @@ commentsRouter.delete('/:commentId',
         if (!ObjectId.isValid(id) || !await getCommentById(id)) return res.sendStatus(404);
         const userId = req.user!.id;
         if (!userId) return res.sendStatus(401);
-        const userInDb = getUserById(userId);
-        if (!userInDb) return res.sendStatus(401);
+        const userInDb = await getUserById(userId);
+        if (!userInDb || userInDb.id!==userId) return res.sendStatus(401);
         const commentInDB = await getCommentById(id);
         if (!commentInDB) return res.sendStatus(404);
         if (commentInDB.userId !== userId) return res.sendStatus(403);
