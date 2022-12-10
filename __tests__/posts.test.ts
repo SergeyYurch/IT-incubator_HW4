@@ -1,16 +1,18 @@
 import request from 'supertest';
 import {app} from "../src/app";
+import {jwtService} from "../src/helpers/jwt-service";
 
 const blog1 = {
     name: 'blog1',
+    description: "description1",
     websiteUrl: 'https://youtube1.com'
-}
+};
 
 describe('POST: /posts create new post', () => {
     let blogId = '';
     beforeAll(async () => {
         await request(app)
-            .delete('/testing/all-data')
+            .delete('/testing/all-data');
         //create blog
         const newBlog1 = await request(app)
             .post('/blogs')
@@ -18,13 +20,17 @@ describe('POST: /posts create new post', () => {
             .send(blog1);
         blogId = newBlog1.body.id;
     });
-
     it('should return code 401 "Unauthorized" for unauthorized request', async () => {
         await request(app)
             .post('/posts')
+            .send({
+                title: 'post1',
+                shortDescription: 'shortDescription1',
+                content: 'content1',
+                blogId: blogId
+            })
             .expect(401);
     });
-
     it('should return code 201 and newBlog for correct input data', async () => {
 
         const newPost = await request(app)
@@ -44,10 +50,10 @@ describe('POST: /posts create new post', () => {
             shortDescription: 'shortDescription1',
             content: 'content1',
             blogId: blogId,
-            blogName: 'blog1'
+            blogName: 'blog1',
+            createdAt: expect.any(String)
         });
     });
-
     it('should return code 400 and error with field title for blog without title ', async () => {
 
         const newPost = await request(app)
@@ -67,7 +73,6 @@ describe('POST: /posts create new post', () => {
             }]
         });
     });
-
     it('should return code 400 and error with relevant field for incorrect title ', async () => {
 
         const newPost = await request(app)
@@ -88,8 +93,6 @@ describe('POST: /posts create new post', () => {
             }]
         });
     });
-
-
     it('should return code 400 and error with relevant field for blog without shortDescription ', async () => {
 
         const newPost = await request(app)
@@ -139,8 +142,6 @@ describe('POST: /posts create new post', () => {
             }]
         });
     });
-
-
     it('should return code 400 and error with field blogId for blog without blogId ', async () => {
 
         const newPost = await request(app)
@@ -160,8 +161,6 @@ describe('POST: /posts create new post', () => {
             }]
         });
     });
-
-
     it('should return code 400 and error with relevant field for incorrect blogId ', async () => {
 
         const newPost = await request(app)
@@ -184,13 +183,12 @@ describe('POST: /posts create new post', () => {
     });
 });
 
-
 describe('GET: /posts get all posts', () => {
 
     let blogId = '';
     beforeAll(async () => {
         await request(app)
-            .delete('/testing/all-data')
+            .delete('/testing/all-data');
 
         //create blog
         const newBlog1 = await request(app)
@@ -228,35 +226,36 @@ describe('GET: /posts get all posts', () => {
             .get('/posts')
             .expect(200);
 
-        expect(posts.body[0]).toEqual(
+        expect(posts.body.items[1]).toEqual(
             {
                 id: expect.any(String),
                 title: 'title1',
                 shortDescription: 'shortDescription1',
                 content: 'content1',
                 blogId: blogId,
-                blogName: 'blog1'
+                blogName: 'blog1',
+                createdAt: expect.any(String)
             });
 
-        expect(posts.body[1]).toEqual(
+        expect(posts.body.items[0]).toEqual(
             {
                 id: expect.any(String),
                 title: 'title2',
                 shortDescription: 'shortDescription2',
                 content: 'content2',
                 blogId: blogId,
-                blogName: 'blog1'
+                blogName: 'blog1',
+                createdAt: expect.any(String)
             });
     });
 });
-
 
 describe('GET:/posts/id get post by ID', () => {
     let id = '';
     let blogId = '';
     beforeAll(async () => {
         await request(app)
-            .delete('/testing/all-data')
+            .delete('/testing/all-data');
         //create blog
         const newBlog1 = await request(app)
             .post('/blogs')
@@ -275,13 +274,11 @@ describe('GET:/posts/id get post by ID', () => {
         id = newPost.body.id;
 
     });
-
     it('should return code 404 for incorrect ID', async () => {
         await request(app)
             .get('/posts/qwerty')
             .expect(404);
     });
-
     it('should return code 200 and equal post for correct request', async () => {
         const post = await request(app)
             .get(`/posts/${id}`)
@@ -293,18 +290,18 @@ describe('GET:/posts/id get post by ID', () => {
             shortDescription: 'shortDescription1',
             content: 'content1',
             blogId: blogId,
-            blogName: 'blog1'
+            blogName: 'blog1',
+            createdAt: expect.any(String)
         });
     });
 });
-
 
 describe('PUT:/posts/id edit post by ID', () => {
     let id = '';
     let blogId = '';
     beforeAll(async () => {
         await request(app)
-            .delete('/testing/all-data')
+            .delete('/testing/all-data');
         //create blog
         const newBlog1 = await request(app)
             .post('/blogs')
@@ -323,7 +320,6 @@ describe('PUT:/posts/id edit post by ID', () => {
         id = newPost.body.id;
 
     });
-
     it('should return code 401 "Unauthorized" for unauthorized request', async () => {
 
         await request(app)
@@ -336,8 +332,6 @@ describe('PUT:/posts/id edit post by ID', () => {
             })
             .expect(401);
     });
-
-
     it('should return code 404 for incorrect ID', async () => {
         await request(app)
             .put('/posts/qwerty')
@@ -350,8 +344,6 @@ describe('PUT:/posts/id edit post by ID', () => {
             })
             .expect(404);
     });
-
-
     it('should return code 204 and equal post for correct request', async () => {
 
         await request(app)
@@ -364,17 +356,26 @@ describe('PUT:/posts/id edit post by ID', () => {
                 blogId: blogId
             })
             .expect(204);
+
+        const post = await request(app).get(`/posts/${id}`);
+        expect(post.body).toEqual({
+            id: expect.any(String),
+            title: 'title3',
+            shortDescription: 'shortDescription3',
+            content: 'content3',
+            blogId: blogId,
+            blogName: 'blog1',
+            createdAt: expect.any(String)
+        });
     });
-
 });
-
 
 describe('DELETE:/posts/id delete', () => {
     let id = '';
     let blogId = '';
     beforeAll(async () => {
         await request(app)
-            .delete('/testing/all-data')
+            .delete('/testing/all-data');
 
         //create blog
         const newBlog1 = await request(app)
@@ -395,21 +396,17 @@ describe('DELETE:/posts/id delete', () => {
 
 
     });
-
     it('should return code 401 "Unauthorized" for unauthorized request', async () => {
         await request(app)
             .delete('/posts/1')
             .expect(401);
     });
-
-
     it('should return code 404 for incorrect ID', async () => {
         await request(app)
             .delete('/posts/qwerty')
             .auth('admin', 'qwerty', {type: "basic"})
             .expect(404);
     });
-
     it('should return code 204 for correct request, and should return 404 for GET by id', async () => {
         await request(app)
             .delete(`/posts/${id}`)
@@ -420,6 +417,105 @@ describe('DELETE:/posts/id delete', () => {
             .get(`/posts/${id}`)
             .expect(404);
     });
+});
 
+describe('POST: /posts/{postId}/comments create new comment for post', () => {
+    let blogId = '';
+    let userId = '';
+    let postId = '';
+    let token = '';
+    let token_ = '';
+    beforeAll(async () => {
+        await request(app)
+            .delete('/testing/all-data');
+        //create blog
+        const newBlog = await request(app)
+            .post('/blogs')
+            .auth('admin', 'qwerty', {type: "basic"})
+            .send({
+                name: 'blog1',
+                description: "description1",
+                websiteUrl: 'https://youtube1.com'
+            });
+        blogId = newBlog.body.id;
 
+        const newPost = await request(app)
+            .post('/posts')
+            .auth('admin', 'qwerty', {type: "basic"})
+            .send({
+                title: 'post1',
+                shortDescription: 'shortDescription1',
+                content: 'content1',
+                blogId: blogId
+            });
+
+        const newUser1 = await request(app)
+            .post('/users')
+            .auth('admin', 'qwerty', {type: "basic"})
+            .send({
+                login: "user1",
+                password: "password1",
+                email: "email1@gmail.com"
+            });
+
+        const auth = await request(app)
+            .post('/auth/login')
+            .send({
+                "loginOrEmail": "user1",
+                "password": "password1"
+            });
+
+        userId = newUser1.body.id;
+        postId = newPost.body.id;
+        token = await jwtService.createJWT(userId);
+        token_ = auth.body.accessToken
+    });
+    it('should return code 401 "Unauthorized" for unauthorized request', async () => {
+        await request(app)
+            .post(`/posts/${postId}/comments`)
+             .auth('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzkwZjI4MDRkZWJkZmNiOTZhODkxYjgiLCJpYXQiOjE2NzA2NzI4MzQsImV4cCI6MTY3MDcwODgzNH0.g5lv07SozaP8hMeQKfw5NrSXPW7-Lb55ZSpgWzqTU-U',{type: 'bearer'})
+            //.auth(token_, {type: 'bearer'})
+            .send({
+                content: 'comment1comment1comment1',
+            })
+            .expect(401);
+    });
+
+    it('should return code 400  If the inputModel has incorrect values', async () => {
+        await request(app)
+            .post(`/posts/${postId}/comments`)
+            .auth(token, {type: "bearer"})
+            .send({
+                content: 'content1',
+            })
+            .expect(400);
+    });
+
+    it('should return code 404 If post with specified postId doesn\'t exists ', async () => {
+
+        await request(app)
+            .post(`/posts/11111111111111/comments`)
+            .auth(token, {type: "bearer"})
+            .send({
+                content: 'comment1comment1comment1'
+            })
+            .expect(404);
+    });
+
+    it('should return code 201 and newly created post', async () => {
+        const comment = await request(app)
+            .post(`/posts/${userId}/comments`)
+            .auth(token, {type: 'bearer'})
+            .send({
+                content: 'comment 1 comment 1',
+            });
+        expect(comment.body).toEqual({
+            id: expect.any(String),
+            content: "comment 1 comment 1",
+            userId: userId,
+            userLogin: "user1",
+            createdAt: expect.any(String)
+        });
+
+    });
 });
