@@ -1,7 +1,10 @@
 import {BlogViewModelDto} from "../../controllers/dto/blogViewModel.dto";
-import { PostViewModelDto} from "../../controllers/dto/postViewModel.dto";
+import {PostViewModelDto} from "../../controllers/dto/postViewModel.dto";
 import {PaginatorDto} from "../../controllers/dto/paginatorDto";
 import {UserViewModelDto} from "../../controllers/dto/userViewModel.dto";
+import {WithId} from "mongodb";
+import {CommentEntity} from "../../services/entities/comment.entity";
+import {CommentViewModelDto} from "../../controllers/dto/commentViewModel.dto";
 
 
 export interface PaginatorOptionInterface {
@@ -12,6 +15,15 @@ export interface PaginatorOptionInterface {
 }
 
 export interface QueryRepositoryInterface {
+    getCommentById:(id:string)=> Promise<CommentViewModelDto | null>
+    findAllCommentsByUserId: (
+        userId: string,
+        paginatorOption: PaginatorOptionInterface
+    ) => Promise<PaginatorDto<CommentViewModelDto>>;
+    findAllCommentsByPostId: (
+        postId: string,
+        paginatorOption: PaginatorOptionInterface
+    ) => Promise<PaginatorDto<CommentViewModelDto>>;
     getAllBlogs: (
         searchNameTerm: string | null,
         paginatorOption: PaginatorOptionInterface

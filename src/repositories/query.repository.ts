@@ -1,13 +1,82 @@
-import {blogsCollection, postsCollection, usersCollection} from "./db";
-import {ObjectId} from "mongodb";
-import {PaginatorOptionInterface, QueryRepositoryInterface} from "./interfaces/query.repository.interface";
+import {blogsCollection, commentsCollection, postsCollection, usersCollection} from "./db";
+import {ObjectId, WithId} from "mongodb";
+import {
+    PaginatorOptionInterface,
+    QueryRepositoryInterface
+} from "./interfaces/query.repository.interface";
 import {BlogViewModelDto} from "../controllers/dto/blogViewModel.dto";
 import {PostViewModelDto} from "../controllers/dto/postViewModel.dto";
 import {PaginatorDto} from "../controllers/dto/paginatorDto";
 import {UserViewModelDto} from "../controllers/dto/userViewModel.dto";
 import {pagesCount} from "../helpers/helpers";
+import {CommentViewModelDto} from "../controllers/dto/commentViewModel.dto";
 
 export const queryRepository: QueryRepositoryInterface = {
+    getCommentById: async (id: string): Promise<CommentViewModelDto | null> => {
+        const result = await commentsCollection.findOne({_id: new ObjectId(id)});
+        if (!result) return null;
+        return {
+            id: result._id.toString(),
+            userId: result.userId.toString(),
+            userLogin: result.userLogin,
+            content: result.content,
+            createdAt: result.createdAt
+        };
+    },
+    findAllCommentsByUserId: async (
+        userId: string,
+        paginatorOption: PaginatorOptionInterface
+    ): Promise<PaginatorDto<CommentViewModelDto>> => {
+        // console.log(`[findUserByEmailOrPassword]: loginOrEmail:${loginOrEmail}`);
+        const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
+        const totalCount = await commentsCollection.count({userId});
+        const result = await commentsCollection.find({userId})
+            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .toArray();
+        const items: CommentViewModelDto[] = result.map(e => ({
+            id: e._id.toString(),
+            content: e.content,
+            userId: e.userId.toString(),
+            userLogin: e.userLogin,
+            createdAt: e.createdAt
+        }));
+        return {
+            pagesCount: pagesCount(totalCount, pageSize),
+            page: pageNumber,
+            pageSize,
+            totalCount,
+            items
+        };
+    },
+    findAllCommentsByPostId: async (
+        postId: string,
+        paginatorOption: PaginatorOptionInterface
+    ): Promise<PaginatorDto<CommentViewModelDto>> => {
+        // console.log(`[findUserByEmailOrPassword]: loginOrEmail:${loginOrEmail}`);
+        const {sortBy, sortDirection, pageSize, pageNumber} = paginatorOption;
+        const totalCount = await commentsCollection.count({postId});
+        const result = await commentsCollection.find({postId})
+            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .toArray();
+        const items: CommentViewModelDto[] = result.map(e => ({
+            id: e._id.toString(),
+            content: e.content,
+            userId: e.userId.toString(),
+            userLogin: e.userLogin,
+            createdAt: e.createdAt
+        }));
+        return {
+            pagesCount: pagesCount(totalCount, pageSize),
+            page: pageNumber,
+            pageSize,
+            totalCount,
+            items
+        };
+    },
 
     getAllBlogs: async (
         searchNameTerm: string | null = null,
